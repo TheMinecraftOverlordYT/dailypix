@@ -21,11 +21,11 @@ def remove(name):
 SEND_HOUR = 3 + 12
 
 # Initialize fields, read in passwords
-mine = "kyurembeats2@gmail.com"
-recipient = "anitamaniktala@gmail.com"
-sms_gateway = "19198054838@msg.fi.google.com"
 file = open("creds/pass.txt", "r", 1)
-pass_ = file.read()
+mine = file.readline()
+recipient = file.readline()
+sms_gateway = file.readline()
+pass_ = file.readline()
 file.close()
 # Auth into Google Photos
 CLIENT_SECRET_FILE = "creds/gphoto_oauth.json"
@@ -72,7 +72,6 @@ while True:
 
     hour = int(datetime.datetime.today().strftime("%H"))
     if hour < SEND_HOUR:
-        remove(filename)
         print(f"It's too early! Sleeping for {SEND_HOUR - hour} hours")
         time.sleep((SEND_HOUR - hour) * 60 * 60)
 
