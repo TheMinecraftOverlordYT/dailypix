@@ -7,15 +7,14 @@ class SheetManager:
     sheet = None
 
     def __init__(self):
-        self.wb = openpyxl.load_workbook("data/records.xlsx")
+        self.wb = openpyxl.load_workbook("G:/Ketan/PycharmProjects/dailypix/data/records.xlsx")
         need_new = True
         sheets = self.wb.sheetnames
         current_sheet = None
         year = datetime.date.today().strftime("%Y")
-        for s in sheets:
-            if s == str(year):
-                need_new = False
-                current_sheet = s
+        if year in sheets:
+            need_new = False
+            current_sheet = sheets[sheets.index(year)]
 
         if need_new:
             current_sheet = self.wb.create_sheet(title=str(year))
@@ -26,7 +25,7 @@ class SheetManager:
         month = datetime.date.today().strftime("%m")  # Row
         day = datetime.date.today().strftime("%d")  # Column
 
-        return self.wb.get_sheet_by_name(self.sheet).cell(int(day), int(month))
+        return self.wb[self.sheet.title()].cell(int(day), int(month))
 
     def check_cell(self):
         cell = self.get_cell()
@@ -36,4 +35,4 @@ class SheetManager:
         cell = self.get_cell()
         if cell.value is None:
             cell.value = str(date)[0:10] + " " + url
-            self.wb.save("data/records.xlsx")
+            self.wb.save("G:/Ketan/PycharmProjects/dailypix/data/records.xlsx")

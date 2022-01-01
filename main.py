@@ -1,3 +1,5 @@
+#! python3
+import os
 import time
 
 from gphotospy.album import *
@@ -21,14 +23,16 @@ def remove(name):
 SEND_HOUR = 3 + 12
 
 # Initialize fields, read in passwords
-file = open("creds/pass.txt", "r", 1)
+file = open("G:/Ketan/PycharmProjects/dailypix/creds/pass.txt", "r", 1)
 mine = file.readline()
 recipient = file.readline()
+recipients = recipient.split(',')
 sms_gateway = file.readline()
+sms_gateways = sms_gateway.split(',')
 pass_ = file.readline()
 file.close()
 # Auth into Google Photos
-CLIENT_SECRET_FILE = "creds/gphoto_oauth.json"
+CLIENT_SECRET_FILE = "G:/Ketan/PycharmProjects/dailypix/creds/gphoto_oauth.json"
 service = authorize.init(CLIENT_SECRET_FILE)
 
 while True:
@@ -58,8 +62,8 @@ while True:
         output.write(media.raw_download())
         filename = media.filename()
 
-    # If our file is greater than 20MB (25 is limit), compress it
-    if os.path.getsize(filename) / 1000000 > 20:
+    # If our file is greater than 5MB, compress it
+    if os.path.getsize(filename) / 1000000 > 5:
         ic = ImageCompression(filename)
         ic.compress()
 
@@ -84,17 +88,18 @@ while True:
         server.login(mine, pass_)
 
         # Send via email
-        msg = MIMEMultipart()
-        msg["From"] = mine
-        msg["To"] = sms_gateway
-        msg["Subject"] = f"Daily Dog Pic from {month} {day}, {year}\n"
-
         img_data = open(filename, "rb").read()
 
-        mime_image = MIMEImage(img_data, name=os.path.basename(filename))
-        msg.attach(mime_image)
-        sms = msg.as_string()
-        server.sendmail(mine, sms_gateway, sms)
+        for gateway in sms_gateways:
+            msg = MIMEMultipart()
+            msg["From"] = mine
+            msg["To"] = gateway
+            msg["Subject"] = f"Daily Dog Pic from {month} {day}, {year}\n"
+
+            mime_image = MIMEImage(img_data, name=os.path.basename(filename))
+            msg.attach(mime_image)
+            sms = msg.as_string()
+            server.sendmail(mine, gateway, sms)
         server.quit()
 
         remove(filename)

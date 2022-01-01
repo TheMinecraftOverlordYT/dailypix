@@ -6,10 +6,6 @@ from numpy import array
 
 # Lossy image compression using SVD
 class ImageCompression:
-    # Store image location
-    image_loc = None
-    # Store image
-    img = None
     # Degree of precision we want
     modes = 750
 
@@ -19,7 +15,8 @@ class ImageCompression:
         self.img = Image.open(filename)
 
     # Compresses the image
-    def compress(self):
+    def compress(self, modes=750):
+        self.modes = modes
         # Split the image into RGB channels
         red, green, blue = Image.Image.split(self.img)
 
